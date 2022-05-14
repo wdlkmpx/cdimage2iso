@@ -1,0 +1,87 @@
+#!/bin/sh
+# http://unlicense.org/
+
+# optional variables to set before sourcing this script
+#
+# - W_ZLIB_IS_OPTIONAL=yes [show --disable-zlib in --help msg]
+# - W_ZLIB_MIN_VERSION=xxx [minimun supported version, .pc file is required]
+#
+
+#=======================================
+w_new_option zlib ZLIB
+#=======================================
+
+zlib_pc_pkg="zlib"
+
+
+opt_print_zlib()
+{
+	if [ "$W_ZLIB_IS_OPTIONAL" = "yes" ] ; then
+		echo "  --disable-zlib           do not build ZLIB support (autodetect)"
+	fi
+}
+
+
+opt_configure_zlib()
+{
+	if [ "$W_ZLIB_IS_OPTIONAL" = "yes" ] ; then
+		enable_zlib=check
+	else
+		enable_zlib=yes
+		return
+	fi
+
+	for i in $@
+	do
+		case $i in
+		--enable-zlib)  enable_zlib=yes ;;
+		--disable-zlib) enable_zlib=no ;;
+		esac
+	done
+}
+
+
+opt_check_zlib()
+{
+	if [ "$enable_zlib" = "no" ] ; then
+		return
+	fi
+
+	if [ -n "$ZLIB_CFLAGS" ] || [ -n "$ZLIB_LIBS" ] ; then
+		echo "Checking for ZLIB... \$ZLIB_CFLAGS/\$ZLIB_LIBS"
+	else
+		pcpkg=
+		for onepkg in ${zlib_pc_pkg}
+		do
+			if w_pkgconfig_check ${onepkg} ${W_ZLIB_MIN_VERSION} ; then
+				pcpkg=${onepkg}
+				break
+			fi
+		done
+
+		if [ -z "$pcpkg" ]  && [ -z "${W_ZLIB_MIN_VERSION}" ] ; then
+			w_check_header_and_libs zlib.h -lz
+			if [ $? -eq 0 ] ; then
+				#ZLIB_CFLAGS=...
+				ZLIB_LIBS="-lz"
+				pcpkg=configure
+			fi
+		fi
+		#--
+		if [ -z "$pcpkg" ] ; then
+			if [ "$enable_zlib" = "yes" ] ; then
+				exit_error "pkg-config: zlib was not found"
+			fi
+			return
+		fi
+		if [ ! -f "$pcpkg" ] ; then
+			# $pcpkg must not be a file, otherwise it is a custom xxx-config file
+			ZLIB_CFLAGS="$(run_pkg_config ${pcpkg} --cflags 2>/dev/null)"
+			ZLIB_LIBS="$(run_pkg_config ${pcpkg} --libs 2>/dev/null)"
+		fi
+	fi
+
+	config_h_have="$config_h_have ZLIB"
+	config_mk_flags="$config_mk_flags ZLIB"
+}
+

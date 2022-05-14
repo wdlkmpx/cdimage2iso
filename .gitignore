@@ -1,0 +1,13 @@
+*.o
+*.a
+*.so
+*.mo
+config.log
+config.h
+config.mk
+config.sh
+
+src/cdimage2iso
+
+*.exe
+*.iso

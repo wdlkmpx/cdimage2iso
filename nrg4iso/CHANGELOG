@@ -1,0 +1,16 @@
+Version 1.0.1
+=============
+
+Released 2007-Oct-20
+
+Small bugfix release, no new features:
+ * Bugfix: Problem with endianess on Mac OS X PPC machines.  Thanks to Niall Moran for reporting it.
+ * Bugfix: Possible lseek() issue on files bigger than 4GB.
+ * Corrected license in endian.{c,h}
+
+Version 1.0
+===========
+
+Released 2007-Sep-09
+
+Initial release
