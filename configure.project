@@ -1,0 +1,76 @@
+#!/bin/sh
+
+# Project name and version
+PACKAGE="cdimage2iso"
+VERSION="0.1"
+PACKAGE_URL=''
+
+# Flags that will be used in all makefiles that compile code...
+PROJECT_CFLAGS='-Wall -g -O2' # -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
+PROJECT_CXXFLAGS="${PROJECT_CFLAGS}"
+PROJECT_CPPFLAGS=''
+PROJECT_LDFLAGS=''
+PROJECT_LXXFLAGS=''
+PROJECT_LIBS=''
+
+# Project type, use C to avoid checking for C++ compiler and stuff
+# supported values: C, C++ ("" = C++)
+PROJECT_TYPE=C
+
+# Makefile
+MK_SUBDIRS='0lib/7z ${ZLIB_DIR} src'
+MK_DISTCLEAN_FILES=''
+MK_CHECK=''
+
+add_env_help ZLIB
+
+# configure the project using the commands provided
+# by `configure` and other scripts and commands/tools
+w_main_func()
+{
+	# GCC=yes if gcc has been detected
+
+	# if the Makefiles are only compatible with GNU make, use w_require_gnu_make
+	w_prefer_gnu_make
+
+	# check required headers and exit on error
+	w_check_headers_required stdio.h
+
+	# detect the presence of headers
+	w_check_headers unistd.h stdarg.h
+
+	ZLIB_FOUND=
+	if [ -n "$ZLIB_CFLAGS" ] || [ -n "$ZLIB_LIBS" ] ; then
+		ZLIB_FOUND=1
+	fi
+	if [ ! "$ZLIB_FOUND" ] ; then
+		find_pkgconfig  env='ZLIB' pc='zlib' required='false' #minver=1.2.11
+		if [ ! "$ZLIB_FOUND" ] ; then
+			find_lib  env='ZLIB' headers='zlib.h' libs='-lz' required='false'
+		fi
+	fi
+}
+
+# function to run after performing all checks
+w_aftercheck_func()
+{
+	unset USE_BUILTIN_ZLIB
+	if [ ! "$ZLIB_FOUND" ] ; then
+		echo "** Using builtin zlib"
+		ZLIB_DIR="$(pwd)/0lib/zlib"
+		set_env_flags ZLIB "-L${ZLIB_DIR} -lz" "-I${ZLIB_DIR}"
+		USE_BUILTIN_ZLIB=1
+	fi
+}
+
+# function to run once everything is done, probably add stuff to config.h and config.mk
+w_finish_func()
+{
+	if [ "$OS_TARGET" = "MinGW" ] ; then
+		echo "LCOMDLG32 = -lcomdlg32" >> config.mk # commdlg.h (GetOpenFileName)
+		echo "LWS2_32 = -lws2_32" >> config.mk # winsock2.h (bchunk)
+	fi
+	if [ "$USE_BUILTIN_ZLIB" ] ; then
+		echo "#define HAVE_LOCAL_ZLIB 1" >> config.h
+	fi
+}

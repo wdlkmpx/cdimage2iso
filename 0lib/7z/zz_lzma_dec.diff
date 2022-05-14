@@ -1,0 +1,86 @@
+diff -Naur lzma2200/C/7zAlloc.c lzma2200-patched/C/7zAlloc.c
+--- lzma2200/C/7zAlloc.c	2017-04-03 19:00:00.000000000 +0800
++++ lzma2200-patched/C/7zAlloc.c	2022-06-21 12:42:13.000000000 +0800
+@@ -1,7 +1,7 @@
+ /* 7zAlloc.c -- Allocation functions
+ 2017-04-03 : Igor Pavlov : Public domain */
+ 
+-#include "Precomp.h"
++//#include "Precomp.h"
+ 
+ #include <stdlib.h>
+ 
+@@ -24,7 +24,7 @@
+ 
+ void *SzAlloc(ISzAllocPtr p, size_t size)
+ {
+-  UNUSED_VAR(p);
++  //UNUSED_VAR(p);
+   if (size == 0)
+     return 0;
+   #ifdef _SZ_ALLOC_DEBUG
+@@ -36,7 +36,7 @@
+ 
+ void SzFree(ISzAllocPtr p, void *address)
+ {
+-  UNUSED_VAR(p);
++  //UNUSED_VAR(p);
+   #ifdef _SZ_ALLOC_DEBUG
+   if (address != 0)
+   {
+@@ -49,7 +49,7 @@
+ 
+ void *SzAllocTemp(ISzAllocPtr p, size_t size)
+ {
+-  UNUSED_VAR(p);
++  //UNUSED_VAR(p);
+   if (size == 0)
+     return 0;
+   #ifdef _SZ_ALLOC_DEBUG
+@@ -64,7 +64,7 @@
+ 
+ void SzFreeTemp(ISzAllocPtr p, void *address)
+ {
+-  UNUSED_VAR(p);
++  //UNUSED_VAR(p);
+   #ifdef _SZ_ALLOC_DEBUG
+   if (address != 0)
+   {
+diff -Naur lzma2200/C/7zTypes.h lzma2200-patched/C/7zTypes.h
+--- lzma2200/C/7zTypes.h	2022-04-01 18:00:00.000000000 +0800
++++ lzma2200-patched/C/7zTypes.h	2022-06-21 12:42:13.000000000 +0800
+@@ -196,8 +196,8 @@
+ // typedef void VOID;
+ // typedef ULONG_PTR DWORD_PTR, *PDWORD_PTR;
+ // gcc / clang on Unix  : sizeof(long==sizeof(void*) in 32 or 64 bits)
+-typedef          long  INT_PTR;
+-typedef unsigned long  UINT_PTR;
++///typedef          long  INT_PTR;
++///typedef unsigned long  UINT_PTR;
+ typedef          long  LONG_PTR;
+ typedef unsigned long  DWORD_PTR;
+ 
+diff -Naur lzma2200/C/Bra86.c lzma2200-patched/C/Bra86.c
+--- lzma2200/C/Bra86.c	2021-02-10 01:00:00.000000000 +0800
++++ lzma2200-patched/C/Bra86.c	2022-06-21 12:42:13.000000000 +0800
+@@ -1,7 +1,7 @@
+ /* Bra86.c -- Converter for x86 code (BCJ)
+ 2021-02-09 : Igor Pavlov : Public domain */
+ 
+-#include "Precomp.h"
++//#include "Precomp.h"
+ 
+ #include "Bra.h"
+ 
+diff -Naur lzma2200/C/LzmaDec.c lzma2200-patched/C/LzmaDec.c
+--- lzma2200/C/LzmaDec.c	2021-04-02 02:00:00.000000000 +0800
++++ lzma2200-patched/C/LzmaDec.c	2022-06-21 12:42:13.000000000 +0800
+@@ -1,7 +1,7 @@
+ /* LzmaDec.c -- LZMA Decoder
+ 2021-04-01 : Igor Pavlov : Public domain */
+ 
+-#include "Precomp.h"
++//#include "Precomp.h"
+ 
+ #include <string.h>
+ 
